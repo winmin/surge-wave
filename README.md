@@ -74,7 +74,7 @@ A blazingly fast M3U8/HLS video downloader with a beautiful cyberpunk-inspired T
 
 ```bash
 # Clone the repository
-git clone https://github.com/swing/surge-wave.git
+git clone https://github.com/winmin/surge-wave.git
 cd surge-wave
 
 # Build release binary
@@ -237,7 +237,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 📮 Author
 
-**swing** - [bestswngs@gmail.com](mailto:bestswngs@gmail.com)
+**WinMin** - [bestswngs@gmail.com](mailto:bestswngs@gmail.com)
 
 ---
 
