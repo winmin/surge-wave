@@ -1,4 +1,4 @@
-# 🌊 Surge Wave
+# Surge Wave
 
 A blazingly fast M3U8/HLS video downloader with a beautiful cyberpunk-inspired TUI.
 
@@ -10,16 +10,16 @@ A blazingly fast M3U8/HLS video downloader with a beautiful cyberpunk-inspired T
 
 </div>
 
-## ✨ Features
+## Features
 
-- 🚀 **Blazingly Fast** - Written in Rust with async/concurrent downloads
-- 🎨 **Beautiful TUI** - Quad-pane layout inspired by [surge-downloader](https://github.com/surge-downloader/surge)
-- 🎭 **Cyberpunk Theme** - Neon color scheme with real-time visualizations
-- 📊 **Rich Statistics** - Live speed graph, chunk map, and activity log
-- ⚡ **Low Resource** - ~30MB memory, significantly lower than Python alternatives
-- 📦 **Single Binary** - No dependencies except FFmpeg
+- **Blazingly Fast** - Written in Rust with async/concurrent downloads
+- **Beautiful TUI** - Quad-pane layout inspired by [surge-downloader](https://github.com/surge-downloader/surge)
+- **Cyberpunk Theme** - Neon color scheme with real-time visualizations
+- **Rich Statistics** - Live speed graph, chunk map, and activity log
+- **Low Resource** - ~30MB memory, significantly lower than Python alternatives
+- **Single Binary** - No dependencies except FFmpeg
 
-## 🎨 Interface
+## Interface
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -46,25 +46,25 @@ A blazingly fast M3U8/HLS video downloader with a beautiful cyberpunk-inspired T
 
 ### Quad-Pane Layout
 
-- **Top Row (50%)**
-  - Info Panel (30%): URL, filename, progress bar, segment count
-  - Speed Graph (70%): Real-time download speed visualization with 8-level block characters
+**Top Row (50%)**
+- Info Panel (30%): URL, filename, progress bar, segment count
+- Speed Graph (70%): Real-time download speed visualization with 8-level block characters
 
-- **Bottom Row (50%)**
-  - Activity Log (30%): Last 6 download events with status indicators
-  - Statistics (20%): Current speed, downloaded size, elapsed time, ETA
-  - Chunk Map (50%): 100-block visualization of download progress
+**Bottom Row (50%)**
+- Activity Log (30%): Last 6 download events with status indicators
+- Statistics (20%): Current speed, downloaded size, elapsed time, ETA
+- Chunk Map (50%): 100-block visualization of download progress
 
 ### Color Scheme
 
-- 🟣 **Purple** (Magenta) - Logo emphasis
-- 🩷 **Pink** (Light Magenta) - Active states, borders
-- 🩵 **Cyan** - Headers, labels
-- 🟢 **Green** - Completed segments
-- 🔴 **Red** - Failed segments
-- ⚪ **Gray** - Pending segments
+- Purple (Magenta) - Logo emphasis
+- Pink (Light Magenta) - Active states, borders
+- Cyan - Headers, labels
+- Green - Completed segments
+- Red - Failed segments
+- Gray - Pending segments
 
-## 📦 Installation
+## Installation
 
 ### From Source
 
@@ -106,7 +106,7 @@ sudo cp target/release/surge-wave /usr/local/bin/
 surge-wave "https://example.com/video.m3u8" -o video
 ```
 
-## 🚀 Usage
+## Usage
 
 ### Basic Usage
 
@@ -146,27 +146,27 @@ surge-wave "https://example.com/video.m3u8" \
 surge-wave "https://example.com/master.m3u8" -o hq_video
 ```
 
-## 🎯 Why Surge Wave?
+## Why Surge Wave?
 
 ### Performance Comparison
 
 | Metric | Python Alternatives | Surge Wave | Improvement |
 |--------|-------------------|------------|-------------|
-| Memory Usage | ~165 MB | **~30 MB** | 🔥 **82% lower** |
-| CPU Usage | ~102% | **~80%** | 🔥 **22% lower** |
-| Startup Time | 0.6s | **0.1s** | ⚡ **6x faster** |
-| Binary Size | N/A (requires Python) | **3.1 MB** | ✅ Single file |
+| Memory Usage | ~165 MB | **~30 MB** | **82% lower** |
+| CPU Usage | ~102% | **~80%** | **22% lower** |
+| Startup Time | 0.6s | **0.1s** | **6x faster** |
+| Binary Size | N/A (requires Python) | **3.1 MB** | Single file |
 | Download Speed | Network-limited | Network-limited | Same |
 
 ### Key Advantages
 
-- ✅ **Single Binary** - No Python, no dependencies (except FFmpeg)
-- ✅ **Low Memory** - Perfect for servers and resource-constrained environments
-- ✅ **Type Safe** - Rust's strong typing prevents runtime errors
-- ✅ **Modern TUI** - Beautiful, informative interface
-- ✅ **Production Ready** - Optimized with LTO and high optimization levels
+- **Single Binary** - No Python, no dependencies (except FFmpeg)
+- **Low Memory** - Perfect for servers and resource-constrained environments
+- **Type Safe** - Rust's strong typing prevents runtime errors
+- **Modern TUI** - Beautiful, informative interface
+- **Production Ready** - Optimized with LTO and high optimization levels
 
-## 🛠️ Development
+## Development
 
 ### Build from Source
 
@@ -194,7 +194,7 @@ surge-wave/
 └── README.md           # This file
 ```
 
-## 📊 Technical Details
+## Technical Details
 
 ### Dependencies
 
@@ -217,7 +217,7 @@ codegen-units = 1    # Better optimization (slower compile)
 strip = true         # Strip symbols for smaller binary
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Feel free to:
 
@@ -225,17 +225,17 @@ Contributions are welcome! Feel free to:
 - Suggest features
 - Submit pull requests
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - UI/UX design inspired by [surge-downloader](https://github.com/surge-downloader/surge)
 - Built with [ratatui](https://github.com/ratatui-org/ratatui)
 - Powered by [Rust](https://www.rust-lang.org/)
 
-## 📮 Author
+## Author
 
 **WinMin** - [bestswngs@gmail.com](mailto:bestswngs@gmail.com)
 
@@ -243,8 +243,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 <div align="center">
 
-**Made with ❤️ and Rust 🦀**
+Made with Rust
 
-If you find this project useful, please consider giving it a ⭐!
+If you find this project useful, please consider giving it a star.
 
 </div>
