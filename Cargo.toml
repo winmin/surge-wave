@@ -1,0 +1,28 @@
+[package]
+name = "surge-wave"
+version = "1.0.0"
+edition = "2021"
+authors = ["swing <bestswngs@gmail.com>"]
+description = "A blazingly fast M3U8 downloader with Surge-inspired cyberpunk TUI"
+license = "MIT"
+repository = "https://github.com/swing/surge-wave"
+keywords = ["m3u8", "downloader", "tui", "surge", "streaming"]
+categories = ["command-line-utilities", "multimedia::video"]
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+reqwest = { version = "0.11", features = ["stream"] }
+anyhow = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+url = "2.5"
+m3u8-rs = "5.0"
+shellexpand = "3.1"
+futures = "0.3"
+ratatui = "0.26"
+crossterm = "0.27"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

@@ -1,0 +1,29 @@
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Downloads
+downloads/
+downloads_demo/
+*.mp4
+*.ts
+*.m3u8
+temp/
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
