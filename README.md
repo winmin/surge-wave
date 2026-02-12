@@ -66,11 +66,23 @@ A blazingly fast M3U8/HLS video downloader with a beautiful cyberpunk-inspired T
 
 ## Installation
 
-### From Source
-
 **Prerequisites:**
-- [Rust](https://www.rust-lang.org/tools/install) 1.70+
-- [FFmpeg](https://ffmpeg.org/download.html)
+- [Rust](https://www.rust-lang.org/tools/install) 1.70+ (for cargo installation)
+- [FFmpeg](https://ffmpeg.org/download.html) (required for video merging)
+
+### Using Cargo (Recommended)
+
+```bash
+cargo install surge-wave
+```
+
+### From Git Repository
+
+```bash
+cargo install --git https://github.com/winmin/surge-wave
+```
+
+### From Source
 
 ```bash
 # Clone the repository
