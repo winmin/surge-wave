@@ -512,6 +512,7 @@ impl M3U8Downloader {
         let temp_dir = output_dir.join("temp");
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(60))
+            .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
             .build()
             .expect("Failed to create HTTP client");
 
@@ -524,11 +525,42 @@ impl M3U8Downloader {
         }
     }
 
+    fn referer_from_url(url: &str) -> String {
+        if let Ok(parsed) = Url::parse(url) {
+            format!("{}://{}/", parsed.scheme(), parsed.host_str().unwrap_or(""))
+        } else {
+            String::new()
+        }
+    }
+
     async fn fetch_m3u8(&self) -> Result<Vec<String>> {
         println!("📡 正在解析M3U8文件...");
 
-        let response = self.client.get(&self.url).send().await?;
+        let referer = Self::referer_from_url(&self.url);
+        let response = self.client.get(&self.url)
+            .header("Referer", &referer)
+            .header("Accept", "*/*")
+            .header("Origin", referer.trim_end_matches('/'))
+            .send()
+            .await?;
+
+        let status = response.status();
+        if !status.is_success() {
+            anyhow::bail!("HTTP request failed with status: {}", status);
+        }
+
         let content = response.text().await?;
+
+        if content.trim_start().starts_with('<') {
+            if content.contains("cloudflare") || content.contains("Cloudflare") {
+                anyhow::bail!(
+                    "Request blocked by Cloudflare. The server is rejecting automated requests.\n\
+                     Try using a different network, VPN, or add custom headers with --header."
+                );
+            }
+            anyhow::bail!("Server returned HTML instead of M3U8 content. The URL may require authentication or is geo-restricted.");
+        }
+
         let parsed = m3u8_rs::parse_playlist_res(content.as_bytes())
             .map_err(|e| anyhow::anyhow!("Failed to parse M3U8: {:?}", e))?;
 
@@ -540,7 +572,11 @@ impl M3U8Downloader {
                 let variant_url = self.resolve_url(&best_variant.uri)?;
                 println!("  ✓ 选择最高质量流");
 
-                let response = self.client.get(&variant_url).send().await?;
+                let referer = Self::referer_from_url(&variant_url);
+                let response = self.client.get(&variant_url)
+                    .header("Referer", &referer)
+                    .send()
+                    .await?;
                 let content = response.text().await?;
                 let parsed = m3u8_rs::parse_playlist_res(content.as_bytes())
                     .map_err(|e| anyhow::anyhow!("Failed to parse: {:?}", e))?;
@@ -608,7 +644,11 @@ impl M3U8Downloader {
     }
 
     async fn download_segment(&self, url: &str, output_path: &PathBuf) -> Result<u64> {
-        let response = self.client.get(url).send().await?;
+        let referer = Self::referer_from_url(url);
+        let response = self.client.get(url)
+            .header("Referer", &referer)
+            .send()
+            .await?;
         let bytes = response.bytes().await?;
         let len = bytes.len() as u64;
 
