@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use clap::Parser;
 use crossterm::{
+
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
@@ -55,6 +56,10 @@ struct Args {
     /// 并发下载数
     #[arg(short, long, default_value = "10")]
     concurrent: usize,
+
+    /// 自定义请求头 (可多次使用, 格式: "Key: Value")
+    #[arg(short = 'H', long = "header")]
+    headers: Vec<String>,
 }
 
 #[derive(Clone)]
@@ -505,10 +510,11 @@ struct M3U8Downloader {
     temp_dir: PathBuf,
     client: reqwest::Client,
     concurrent_limit: usize,
+    custom_headers: reqwest::header::HeaderMap,
 }
 
 impl M3U8Downloader {
-    fn new(url: String, output_dir: PathBuf, concurrent_limit: usize) -> Self {
+    fn new(url: String, output_dir: PathBuf, concurrent_limit: usize, headers: Vec<String>) -> Self {
         let temp_dir = output_dir.join("temp");
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(60))
@@ -516,31 +522,52 @@ impl M3U8Downloader {
             .build()
             .expect("Failed to create HTTP client");
 
+        let mut custom_headers = reqwest::header::HeaderMap::new();
+        for h in &headers {
+            if let Some((key, value)) = h.split_once(':') {
+                if let (Ok(k), Ok(v)) = (
+                    reqwest::header::HeaderName::from_bytes(key.trim().as_bytes()),
+                    reqwest::header::HeaderValue::from_str(value.trim()),
+                ) {
+                    custom_headers.insert(k, v);
+                }
+            }
+        }
+
         Self {
             url,
             output_dir,
             temp_dir,
             client,
             concurrent_limit,
+            custom_headers,
         }
     }
 
-    fn referer_from_url(url: &str) -> String {
-        if let Ok(parsed) = Url::parse(url) {
-            format!("{}://{}/", parsed.scheme(), parsed.host_str().unwrap_or(""))
+    fn build_request(&self, url: &str) -> reqwest::RequestBuilder {
+        let mut req = self.client.get(url);
+        if self.custom_headers.is_empty() {
+            let referer = if let Ok(parsed) = Url::parse(url) {
+                format!("{}://{}/", parsed.scheme(), parsed.host_str().unwrap_or(""))
+            } else {
+                String::new()
+            };
+            req = req
+                .header("Referer", &referer)
+                .header("Origin", referer.trim_end_matches('/'));
         } else {
-            String::new()
+            for (key, value) in &self.custom_headers {
+                req = req.header(key, value);
+            }
         }
+        req
     }
 
     async fn fetch_m3u8(&self) -> Result<Vec<String>> {
         println!("📡 正在解析M3U8文件...");
 
-        let referer = Self::referer_from_url(&self.url);
-        let response = self.client.get(&self.url)
-            .header("Referer", &referer)
+        let response = self.build_request(&self.url)
             .header("Accept", "*/*")
-            .header("Origin", referer.trim_end_matches('/'))
             .send()
             .await?;
 
@@ -572,9 +599,7 @@ impl M3U8Downloader {
                 let variant_url = self.resolve_url(&best_variant.uri)?;
                 println!("  ✓ 选择最高质量流");
 
-                let referer = Self::referer_from_url(&variant_url);
-                let response = self.client.get(&variant_url)
-                    .header("Referer", &referer)
+                let response = self.build_request(&variant_url)
                     .send()
                     .await?;
                 let content = response.text().await?;
@@ -644,9 +669,7 @@ impl M3U8Downloader {
     }
 
     async fn download_segment(&self, url: &str, output_path: &PathBuf) -> Result<u64> {
-        let referer = Self::referer_from_url(url);
-        let response = self.client.get(url)
-            .header("Referer", &referer)
+        let response = self.build_request(url)
             .send()
             .await?;
         let bytes = response.bytes().await?;
@@ -778,6 +801,7 @@ async fn main() -> Result<()> {
         args.url.clone(),
         output_dir,
         args.concurrent,
+        args.headers,
     );
 
     let segments = downloader.fetch_m3u8().await?;
