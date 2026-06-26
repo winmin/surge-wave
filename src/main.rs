@@ -508,26 +508,29 @@ struct M3U8Downloader {
     url: String,
     output_dir: PathBuf,
     temp_dir: PathBuf,
-    client: reqwest::Client,
+    client: wreq::Client,
     concurrent_limit: usize,
-    custom_headers: reqwest::header::HeaderMap,
+    custom_headers: http::HeaderMap,
 }
 
 impl M3U8Downloader {
     fn new(url: String, output_dir: PathBuf, concurrent_limit: usize, headers: Vec<String>) -> Self {
         let temp_dir = output_dir.join("temp");
-        let client = reqwest::Client::builder()
+        // Emulate a real Chrome browser's TLS (JA3/JA4) and HTTP/2 fingerprints so the
+        // requests get past Cloudflare bot protection. A plain reqwest client is
+        // fingerprinted as a script and rejected with 403 regardless of headers.
+        let client = wreq::Client::builder()
             .timeout(Duration::from_secs(60))
-            .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+            .emulation(wreq_util::Emulation::Chrome137)
             .build()
             .expect("Failed to create HTTP client");
 
-        let mut custom_headers = reqwest::header::HeaderMap::new();
+        let mut custom_headers = http::HeaderMap::new();
         for h in &headers {
             if let Some((key, value)) = h.split_once(':') {
                 if let (Ok(k), Ok(v)) = (
-                    reqwest::header::HeaderName::from_bytes(key.trim().as_bytes()),
-                    reqwest::header::HeaderValue::from_str(value.trim()),
+                    http::header::HeaderName::from_bytes(key.trim().as_bytes()),
+                    http::header::HeaderValue::from_str(value.trim()),
                 ) {
                     custom_headers.insert(k, v);
                 }
@@ -544,7 +547,7 @@ impl M3U8Downloader {
         }
     }
 
-    fn build_request(&self, url: &str) -> reqwest::RequestBuilder {
+    fn build_request(&self, url: &str) -> wreq::RequestBuilder {
         let mut req = self.client.get(url);
         if self.custom_headers.is_empty() {
             let referer = if let Ok(parsed) = Url::parse(url) {
